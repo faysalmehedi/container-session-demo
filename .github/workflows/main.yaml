@@ -15,18 +15,32 @@ jobs:
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
 
     steps:
-      - name: OCI-CLI kubectl
-        run: |
-          sudo apt install python3-pip
-          sudo pip install pyopenssl --upgrade
-          sudo pip install oci-cli
-          
-      - name: Retrieve the OCID of a named compartment in tenancy
-        uses: oracle-actions/run-oci-cli-command@v1.1.1
-        id: find-compartment-id
+    
+      - name: Get or create an OCIR Repository
+        uses: oracle-actions/get-ocir-repository@v1.2.1
+        id: get-ocir-repository
         with:
-          command: 'iam compartment list --compartment-id-in-subtree=true'
-          query: "data[?name=='testing'].id"
+          name: oraclelinux
+          compartment: ${{ secrets.OCI_COMPARTMENT_OCID }}
+
+      - name: Log into OCIR
+        uses: oracle-actions/login-ocir@v1.2.1
+        id: login-ocir
+        with:
+          auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
+          
+      # - name: OCI-CLI kubectl
+      #   run: |
+      #     sudo apt install python3-pip
+      #     sudo pip install pyopenssl --upgrade
+      #     sudo pip install oci-cli
+          
+      # - name: Retrieve the OCID of a named compartment in tenancy
+      #   uses: oracle-actions/run-oci-cli-command@v1.1.1
+      #   id: find-compartment-id
+      #   with:
+      #     command: 'iam compartment list --compartment-id-in-subtree=true'
+      #     query: "data[?name=='testing'].id"
           
       # - name: Configure Kubectl
       #   uses: oracle-actions/configure-kubectl-oke@v1.3.2
