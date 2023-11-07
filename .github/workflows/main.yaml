@@ -21,12 +21,19 @@ jobs:
           sudo pip install pyopenssl --upgrade
           sudo pip install oci-cli
           
-      - name: Configure Kubectl
-        uses: oracle-actions/configure-kubectl-oke@v1.3.2
-        id: test-configure-kubectl-oke-action
+      - name: Retrieve the OCID of a named compartment in tenancy
+        uses: oracle-actions/run-oci-cli-command@v1.1.1
+        id: find-compartment-id
         with:
-          cluster: ${{ secrets.OKE_CLUSTER_OCID }}
-          enablePrivateEndpoint: true
+          command: 'iam compartment list --compartment-id-in-subtree=true'
+          query: "data[?name=='testing'].id"
+          
+      # - name: Configure Kubectl
+      #   uses: oracle-actions/configure-kubectl-oke@v1.3.2
+      #   id: test-configure-kubectl-oke-action
+      #   with:
+      #     cluster: ${{ secrets.OKE_CLUSTER_OCID }}
+      #     enablePrivateEndpoint: true
           
       - name: Run Kubectl
         run: kubectl get nodes -A
