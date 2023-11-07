@@ -1,48 +1,26 @@
 name: Manual workflow
 on:
   workflow_dispatch:
+  
+
 jobs:
-  get-ocir-repository-test:
-    runs-on: ubuntu-22.04
-    name: Get OCIR Repository Test
+  install-kubectl:
+    runs-on: self-hosted
+    name: Install Kubectl for OKE
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
       OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
       OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
       OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+
     steps:
-      - name: Get or create an OCIR Repository
-        uses: oracle-actions/get-ocir-repository@v1.2.1
-        id: get-ocir-repository
+      - name: Configure Kubectl
+        uses: oracle-actions/configure-kubectl-oke@v1.3.2
+        id: test-configure-kubectl-oke-action
         with:
-          name: oraclelinux
-          compartment: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          cluster: ${{ secrets.OKE_CLUSTER_OCID }}
+          # enablePrivateEndpoint: true
 
-      - name: Log into OCIR
-        uses: oracle-actions/login-ocir@v1.2.1
-        id: login-ocir
-        with:
-          auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
-
-# jobs:
-#   install-kubectl:
-#     runs-on: self-hosted
-#     name: Install Kubectl for OKE
-#     env:
-#       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
-#       OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
-#       OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
-#       OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
-#       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-
-#     steps:
-#       - name: Configure Kubectl
-#         uses: oracle-actions/configure-kubectl-oke@v1.3.2
-#         id: test-configure-kubectl-oke-action
-#         with:
-#           cluster: ${{ secrets.OKE_CLUSTER_OCID }}
-#           enablePrivateEndpoint: true
-
-#       - name: Run Kubectl
-#         run: kubectl get nodes -A
+      - name: Run Kubectl
+        run: kubectl get nodes -A
