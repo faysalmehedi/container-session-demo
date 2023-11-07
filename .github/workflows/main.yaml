@@ -18,8 +18,8 @@ jobs:
       - name: OCI-CLI kubectl
         run: |
           sudo apt install python3-pip
-          pip install pyopenssl --upgrade
-          pip install oci-cli
+          sudo pip install pyopenssl --upgrade
+          sudo pip install oci-cli
           
       - name: Configure Kubectl
         uses: oracle-actions/configure-kubectl-oke@v1.3.2
