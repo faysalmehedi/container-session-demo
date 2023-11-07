@@ -15,12 +15,20 @@ jobs:
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
 
     steps:
-      - name: Configure Kubectl
-        uses: oracle-actions/configure-kubectl-oke@v1.3.2
-        id: test-configure-kubectl-oke-action
-        with:
-          cluster: ${{ secrets.OKE_CLUSTER_OCID }}
-          enablePrivateEndpoint: true
+      # - name: Configure Kubectl
+      #   uses: oracle-actions/configure-kubectl-oke@v1.3.2
+      #   id: test-configure-kubectl-oke-action
+      #   with:
+      #     cluster: ${{ secrets.OKE_CLUSTER_OCID }}
+      #     enablePrivateEndpoint: true
 
+      - name: Configure kubectl
+        run: |
+          sudo apt install python3-pip
+          pip install oci-cli
+          mkdir -p $HOME/.kube
+          oci ce cluster create-kubeconfig --cluster-id ${{ secrets.OKE_CLUSTER_OCID }} --file $HOME/.kube/config --region ap-mumbai-1 --token-version 2.0.0  --kube-endpoint PRIVATE_ENDPOINT
+          export KUBECONFIG=$HOME/.kube/config
+          
       - name: Run Kubectl
         run: kubectl get nodes -A
