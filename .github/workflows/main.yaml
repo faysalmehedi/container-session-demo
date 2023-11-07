@@ -15,10 +15,11 @@ jobs:
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
 
     steps:
-      # - name: OCI-CLI kubectl
-      #   run: |
-      #     sudo apt install python3-pip
-      #     pip install oci-cli
+      - name: OCI-CLI kubectl
+        run: |
+          sudo apt install python3-pip
+          pip install pyopenssl --upgrade
+          pip install oci-cli
           
       - name: Configure Kubectl
         uses: oracle-actions/configure-kubectl-oke@v1.3.2
