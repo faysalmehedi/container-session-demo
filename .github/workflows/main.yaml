@@ -23,7 +23,7 @@ jobs:
           # rm -rf ~/.kube
           # rm -rf ~/lib
           # rm -rf ~/bin
-          # mkdir ~/.oci
+          mkdir ~/.oci
           echo "[DEFAULT]" >> ~/.oci/config
           echo "user=${{secrets.OCI_CLI_USER}}" >> ~/.oci/config
           echo "fingerprint=${{secrets.OCI_CLI_FINGERPRINT}}" >> ~/.oci/config
