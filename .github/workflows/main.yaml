@@ -34,7 +34,7 @@ jobs:
           chmod +x install.sh
           ./install.sh --accept-all-defaults
           # echo "::add-path::/home/runner/bin"
-          run echo "{:/home/runner/bin}" >> $GITHUB_PATH
+          echo "{:/home/runner/bin}" >> $GITHUB_PATH
           exec -l $SHELL
 
       - name: 'Fix Config File Permissions'
