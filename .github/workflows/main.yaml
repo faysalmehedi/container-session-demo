@@ -15,26 +15,34 @@ jobs:
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
 
     steps:
-             
-      # - name: OCI-CLI kubectl
-      #   run: |
-      #     sudo apt install python3-pip
-      #     sudo pip install pyopenssl --upgrade
-      #     sudo pip install oci-cli
+    
+      - uses: actions/checkout@v2
+      - name: 'Write Config & Key Files'
+        run: |
+          mkdir ~/.oci
+          echo "[DEFAULT]" >> ~/.oci/config
+          echo "user=${{secrets.OCI_CLI_USER}}" >> ~/.oci/config
+          echo "fingerprint=${{secrets.OCI_CLI_FINGERPRINT}}" >> ~/.oci/config
+          echo "tenancy=${{secrets.OCI_CLI_TENANCY}}" >> ~/.oci/config
+          echo "region=${{secrets.OCI_CLI_REGION}}" >> ~/.oci/config         
+          echo "${{secrets.OCI_CLI_KEY_CONTENT}}" >> ~/.oci/key.pem
+          echo "key_file=~/.oci/key.pem" >> ~/.oci/config
           
-      - name: Retrieve the OCID of a named compartment in tenancy
-        uses: oracle-actions/run-oci-cli-command@v1.1.1
-        id: find-compartment-id
-        with:
-          command: 'iam compartment list --compartment-id-in-subtree=true'
-          query: "data[?name=='testing'].id"
-          
-      # - name: Configure Kubectl
-      #   uses: oracle-actions/configure-kubectl-oke@v1.3.2
-      #   id: test-configure-kubectl-oke-action
-      #   with:
-      #     cluster: ${{ secrets.OKE_CLUSTER_OCID }}
-      #     enablePrivateEndpoint: true
-          
-      - name: Run Kubectl
-        run: kubectl get nodes -A
+      - name: 'Install OCI CLI'
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "::add-path::/home/runner/bin"
+          exec -l $SHELL
+
+      - name: 'Fix Config File Permissions'
+        run: |
+          oci setup repair-file-permissions --file ~/.oci/key.pem
+          oci setup repair-file-permissions --file ~/.oci/config
+      
+      - name: 'Download the KUBECONFIG'
+        run: |
+          mkdir -p ~/.kube
+          oci ce cluster create-kubeconfig --cluster-id ${{ secrets.OKE_CLUSTER_OCID }} --file ~/.kube/config --region ${{secrets.OCI_CLI_REGION}} --token-version 2.0.0 
+          export KUBECONFIG=~/.kube/config
