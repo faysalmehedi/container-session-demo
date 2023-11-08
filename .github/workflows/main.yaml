@@ -20,6 +20,9 @@ jobs:
       - name: 'Write Config & Key Files'
         run: |
           rm -rf ~/.oci
+          rm -rf ~/.kube
+          rm -rf ~/lib
+          rm -rf ~/bin
           mkdir ~/.oci
           echo "[DEFAULT]" >> ~/.oci/config
           echo "user=${{secrets.OCI_CLI_USER}}" >> ~/.oci/config
@@ -34,23 +37,20 @@ jobs:
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x install.sh
           ./install.sh --accept-all-defaults
-          # echo "::add-path::/home/runner/bin"
-          # echo "{:/home/runner/bin}" >> $GITHUB_PATH
           echo "/home/runner/bin" >> $GITHUB_PATH
           exec -l $SHELL
           oci setup repair-file-permissions --file /home/runner/.oci/config
           oci setup repair-file-permissions --file /home/runner/.oci/oci_api_key.pem
-
-      # - name: 'Fix Config File Permissions'
-      #   run: |
-      #     oci setup repair-file-permissions --file /home/runner/.oci/config
-      #     oci setup repair-file-permissions --file /home/runner/.oci/oci_api_key.pem
-      #     # oci setup repair-file-permissions --file ~/.oci/key.pem
-      #     # oci setup repair-file-permissions --file ~/.oci/config
       
       - name: 'Download the KUBECONFIG'
         run: |
-          rm -rf ~/.kube
           mkdir -p ~/.kube
           oci ce cluster create-kubeconfig --cluster-id ${{ secrets.OKE_CLUSTER_OCID }} --file ~/.kube/config --region ${{secrets.OCI_CLI_REGION}} --token-version 2.0.0 
           export KUBECONFIG=~/.kube/config
+
+      - name: "Cleaning"
+        run: |
+          rm -rf ~/.oci
+          rm -rf ~/.kube
+          rm -rf ~/lib
+          rm -rf ~/bin
