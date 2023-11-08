@@ -19,6 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: 'Write Config & Key Files'
         run: |
+          rm -rf ~/.oci
           mkdir ~/.oci
           echo "[DEFAULT]" >> ~/.oci/config
           echo "user=${{secrets.OCI_CLI_USER}}" >> ~/.oci/config
