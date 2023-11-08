@@ -19,11 +19,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: 'Write Config & Key Files'
         run: |
-          rm -rf ~/.oci
-          rm -rf ~/.kube
-          rm -rf ~/lib
-          rm -rf ~/bin
-          mkdir ~/.oci
+          # rm -rf ~/.oci
+          # rm -rf ~/.kube
+          # rm -rf ~/lib
+          # rm -rf ~/bin
+          # mkdir ~/.oci
           echo "[DEFAULT]" >> ~/.oci/config
           echo "user=${{secrets.OCI_CLI_USER}}" >> ~/.oci/config
           echo "fingerprint=${{secrets.OCI_CLI_FINGERPRINT}}" >> ~/.oci/config
@@ -47,6 +47,10 @@ jobs:
           mkdir -p ~/.kube
           oci ce cluster create-kubeconfig --cluster-id ${{ secrets.OKE_CLUSTER_OCID }} --file ~/.kube/config --region ${{secrets.OCI_CLI_REGION}} --token-version 2.0.0 
           export KUBECONFIG=~/.kube/config
+      - name: "Get Podes"
+        run: | 
+          kubectl get nodes
+          kubectl get pods -A
 
       - name: "Cleaning"
         run: |
