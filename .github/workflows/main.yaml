@@ -1,4 +1,4 @@
-name: Manual workflow
+name: oci-trigger
 on:
   workflow_dispatch:
   
@@ -34,15 +34,18 @@ jobs:
           chmod +x install.sh
           ./install.sh --accept-all-defaults
           # echo "::add-path::/home/runner/bin"
-          echo "{:/home/runner/bin}" >> $GITHUB_PATH
+          # echo "{:/home/runner/bin}" >> $GITHUB_PATH
+          echo "/home/runner/bin" >> $GITHUB_PATH
           exec -l $SHELL
-
-      - name: 'Fix Config File Permissions'
-        run: |
           oci setup repair-file-permissions --file /home/runner/.oci/config
           oci setup repair-file-permissions --file /home/runner/.oci/oci_api_key.pem
-          # oci setup repair-file-permissions --file ~/.oci/key.pem
-          # oci setup repair-file-permissions --file ~/.oci/config
+
+      # - name: 'Fix Config File Permissions'
+      #   run: |
+      #     oci setup repair-file-permissions --file /home/runner/.oci/config
+      #     oci setup repair-file-permissions --file /home/runner/.oci/oci_api_key.pem
+      #     # oci setup repair-file-permissions --file ~/.oci/key.pem
+      #     # oci setup repair-file-permissions --file ~/.oci/config
       
       - name: 'Download the KUBECONFIG'
         run: |
